@@ -17,6 +17,7 @@ username varchar(25) References users(username) ON DELETE CASCADE,
 albumName varchar(100) NOT NULL,
 privacy varchar(10) NOT NULL References privacy(type),
 totalImages int Default 0,
+date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (username,albumName)
 );
 
