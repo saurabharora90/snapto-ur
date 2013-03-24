@@ -21,8 +21,8 @@
                 }
             ?>
         </p>
-        <a href="user/logout">Logout</a> </br>
-        <a href="user/createAlbum">Create Album</a>
+        <a href="../user/logout">Logout</a> </br>
+        <a href="../album/createAlbum">Create Album</a>
         <p></p>
     </body>
 </html>

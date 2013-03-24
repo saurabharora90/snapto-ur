@@ -1,5 +1,5 @@
 <?php
-
+//phpinfo();
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +65,7 @@
 
     <div class="container">
         <?php echo validation_errors(); ?>
-      <form method="post" accept-charset="utf-8" action="login/verify" class="form-signin">
+      <form method="post" accept-charset="utf-8" action="../login/verify" class="form-signin">
         <h2 class="form-signin-heading">Please sign in</h2>
         <input type="text" class="input-block-level" placeholder="Username" id="username" name="username">
         <input type="password" class="input-block-level" placeholder="Password" id="passsword" name="password">
