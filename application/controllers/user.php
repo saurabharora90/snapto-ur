@@ -29,7 +29,9 @@ class User extends CI_Controller {
     $data = $this->getSessionData();
  
     $this->load->model('userModel');
-    $data['album_infos'] = $this->userModel->getAlbums($data['username']);
+    $data['created_album_info'] = $this->userModel->getCreatedAlbums($data['username']);
+    //var_dump($data);
+    //Get shared and collaborated album info's as well and pass it to the view for display.
 
     $this->load->view('user/user_view', $data);
  }

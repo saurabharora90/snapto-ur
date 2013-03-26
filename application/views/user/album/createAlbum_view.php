@@ -11,57 +11,64 @@
         <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet">
 
         <style>
-body { padding: 30px }
-form { display: block; margin: 20px auto; background: #eee; border-radius: 10px; padding: 15px }
+            body { padding: 30px }
 
-.progress { position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
-.bar { background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px; }
-.percent { position:absolute; display:inline-block; top:3px; left:48%; }
-</style>
+            .progress { position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
+            .bar { background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px; }
+            .percent { position:absolute; display:inline-block; top:3px; left:48%; }
+        </style>
 
     </head>
         <body>
-            <?php
-                echo form_open_multipart('../album/createAlbum/uploadImages');
-            ?>
-            <input type="text" name="albumName" placeholder="Album Name"/></br>
-            <input type="file" name="userfiles[]" multiple id="fileChoser"/>
-            </br>
-            <input type="submit" value="Upload images"/>
+            <h1>Create a New Album</h1>
+            <form action="../album/createAlbum/uploadImages" method="post" enctype="multipart/form-data">
+                <input type="text" name="albumName" id="albumName" placeholder="Album Name"/>
+                <label for="privacy">Album Privacy:</label>
+                <select name="privacy">
+                    <option>Private</option>
+                    <option>Public</option>
+                </select></br>
+                <input type="file" name="file_up[]" id="file_up" multiple accept="image/png, image/jpg, image/jpeg">
+                <input type="submit" value="Upload images" class="btn">
             </form>
 
-            <div class="progress">
+            <div class="progress progress-striped">
                 <div class="bar"></div >
                 <div class="percent">0%</div >
             </div>
     
     <div id="status"></div>
     
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <script>
-    (function () {
+    (/*function () {
 
         var bar = $('.bar');
         var percent = $('.percent');
         var status = $('#status');
 
         $('form').ajaxForm(
-            {
-                beforeSend: function () {
+            { datatype: "json",
+                beforeSubmit: function (arr, $form, options) {
                     status.empty();
                     var percentVal = '0%';
                     bar.width(percentVal)
                     percent.html(percentVal);
+
+                    if (!$('#file_up').val()) { status.html("No file selected"); return false; }
+
+                    if (!$('#albumName').val()) { status.html("Enter an album name."); return false; }
                 },
                 uploadProgress: function (event, position, total, percentComplete) {
                     var percentVal = percentComplete + '%';
                     bar.width(percentVal)
                     percent.html(percentVal);
-                    status.html($('#fileChoser').val());
+                    //status.html(position);
                 },
-                complete: function (xhr) {
-                    status.html(xhr.responseText);
+                success: function (data, textStatus) {
+                    var result = jQuery.parseJSON(data);
+                    //status.html(result.name);
                 }
             });
 

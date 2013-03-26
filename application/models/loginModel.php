@@ -4,9 +4,9 @@ Class loginModel extends CI_Model
 {
  function login_verify($username, $password)
  {
-   $this -> db -> select('username, password, name');
+   $this -> db -> select('email, password, name');
    $this -> db -> from('users');
-   $this -> db -> where('username', $username);
+   $this -> db -> where('email', $username);
    $this -> db -> where('password', MD5($password));
    $this -> db -> limit(1);
 

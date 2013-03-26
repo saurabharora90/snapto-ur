@@ -1,9 +1,8 @@
 ﻿CREATE TABLE users
 (
-username varchar(25) PRIMARY KEY,
-password varchar(128) NOT NULL,
-name varchar(50) NOT NULL,
-email varchar(100) NOT NULL
+email varchar(50) PRIMARY KEY,
+password varchar(32) NOT NULL,
+name varchar(50) NOT NULL
 );
 
 CREATE TABLE privacy
@@ -11,14 +10,42 @@ CREATE TABLE privacy
 type varchar(10) PRIMARY KEY CHECK(type='Public' OR type='Private')
 );
 
-CREATE TABLE albums
+CREATE TABLE albums   /*represents the album created by the as user*/
 (
-username varchar(25) References users(username) ON DELETE CASCADE,
+user_created varchar(50) NOT NULL,
 albumName varchar(100) NOT NULL,
-privacy varchar(10) NOT NULL References privacy(type),
+privacy varchar(10) NOT NULL,
 totalImages int Default 0,
 date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (username,albumName)
+albumId varchar(32) NOT NULL,
+PRIMARY KEY (albumId), /*album ID will be a MD5 hash of albumName and user_created*/
+INDEX (user_created),
+INDEX (privacy),
+FOREIGN KEY(user_created) References users(email) ON DELETE CASCADE,
+FOREIGN KEY(privacy) References privacy(type)
+);
+
+CREATE TABLE shared_albums
+(
+albumId varchar(32) NOT NULL,
+shared_with_userId varchar(50) NOT NULL,
+dateOfSharing TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (albumId,shared_with_userId),
+INDEX (shared_with_userId),
+INDEX (albumId),
+FOREIGN KEY(shared_with_userId) References users(email) ON DELETE CASCADE,
+FOREIGN KEY(albumId) References albums(albumId) ON DELETE CASCADE
+);
+
+CREATE TABLE collaborated_albums
+(
+albumId varchar(32) NOT NULL,
+collaborated_with_userId varchar(50) NOT NULL,
+PRIMARY KEY (albumId,collaborated_with_userId),
+INDEX (collaborated_with_userId),
+INDEX (albumId),
+FOREIGN KEY(collaborated_with_userId) References users(email) ON DELETE CASCADE,
+FOREIGN KEY(albumId) References albums(albumId) ON DELETE CASCADE
 );
 
 CREATE TABLE tags
@@ -28,10 +55,19 @@ type varchar(15) PRIMARY KEY
 
 CREATE TABLE images
 (
-username varchar(25) References users(username) ON DELETE CASCADE,
-albumName varchar(100) NOT NULL References album(albumName) ON DELETE CASCADE ON UPDATE CASCADE,
-privacy varchar(10) NOT NULL References privacy(type),
+owner_userId varchar(50) NOT NULL, /*during collaboartion, images might be owned by different users*/
+albumId varchar(32) NOT NULL,
+privacy varchar(10) NOT NULL,
 imageName varchar(50) NOT NULL,
 tag varchar(15) REFERENCES tags(type),
-PRIMARY KEY (username,albumName,imageName)
+imageId varchar(32) NOT NULL, /*imageId will be a MD5 hash of userId, imageName and albumId*/
+PRIMARY KEY (imageId),
+INDEX (owner_userId),
+INDEX (albumId),
+INDEX (privacy),
+FOREIGN KEY(owner_userId) References users(email) ON DELETE CASCADE,
+FOREIGN KEY(albumId) References albums(albumId) ON DELETE CASCADE,
+FOREIGN KEY(privacy) References privacy(type)
 );
+
+/*Index have been added as they are required for foreign key constraints in a MYSQL database.*/

@@ -47,7 +47,7 @@ class login extends CI_Controller {
             foreach($result as $row)
             {
                 $sess_array = array(
-                'username' => $row->username,
+                'username' => $row->email,
                 'name' => $row->name
             );
             $this->session->set_userdata('logged_in', $sess_array);

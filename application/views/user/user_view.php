@@ -13,12 +13,11 @@
         <h2>Welcome <?php echo $name; ?>!</h2>
         <p>
             <?php
-                if($album_infos == NULL)
-                    echo "You have 0 albums";
-                else
-                {
-                    echo "You have ".$album_infos->size()." albums";
-                }
+                $createdAlbumsNo = count($created_album_info);  //The album id will go along with the album name as a hidden value.
+                if($createdAlbumsNo>1)
+                    echo "You have created ".$createdAlbumsNo." albums"; //more than 1 album, hence 'albums'
+                else //1 or 0 'album'
+                    echo "You have created ".$createdAlbumsNo." album";
             ?>
         </p>
         <a href="../user/logout">Logout</a> </br>
