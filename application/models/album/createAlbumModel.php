@@ -1,4 +1,9 @@
-<?php
+<?php 
+ require_once("/application/libraries/WindowsAzure/WindowsAzure.php");
+ use WindowsAzure\Common\ServicesBuilder;
+ use WindowsAzure\Common\ServiceException;
+ use WindowsAzure\Blob\Models\BlockList;
+
 Class createAlbumModel extends CI_Model
 {
     function _construct()
@@ -8,112 +13,140 @@ Class createAlbumModel extends CI_Model
 
     function uploadImages($data)
     {
-        //the images shall be uploaded to /uploads/images/username/albumName
-         $this->load->library('upload');
          $username = $data['username'];
          $albumName = $data['albumName'];
          $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
 
-         if(!($this->createAlbumDatabase($data,$album_id)))
+         $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
+         $picture = strtoupper($_FILES['Filedata']['name']);
+
+         //Check if this image already exists in this album
+         if(!$this->imageExists($data))
          {
-             $error = "Album name already exists";
-             //echo $error;
-             return $error; //figure out how to display the error most likely parse in JSON and return.
+            //show_error("Duplicate Image names.",501);
+            $this->output->set_header("HTTP/1.1 501 Not Implemented");
+            //echo "Duplicate Image names.";
+            return;
          }
 
-         for($i=0;$i<count($_FILES['file_up']['name']);$i++)
-         {  
-          $_FILES['userfile']['name']    =   $_FILES['file_up']['name'][$i];
-          $_FILES['userfile']['type']    =   $_FILES['file_up']['type'][$i];
-          $_FILES['userfile']['tmp_name'] =   $_FILES['file_up']['tmp_name'][$i];
-          $_FILES['userfile']['error']       =   $_FILES['file_up']['error'][$i];
-          $_FILES['userfile']['size']    =   $_FILES['file_up']['size'][$i]; 
-  
-          $config['upload_path'] = './uploads/full/';
-          $config['allowed_types'] = 'jpg|jpeg|png';
-          $config['max_size']	= '0';
-          
-          $imageId = md5($username.$album_id.$_FILES['userfile']['name']);
-          $type = explode("/",$_FILES['userfile']['type']);  //File type is image/jpeg. So split the string at '/'. type[0]=image and type[1] = extension.
-          $config['file_name'] = $imageId.'.'.$type[1];
-          
-          $this->upload->initialize($config);
-   
-          if (!$this->upload->do_upload()) {  
-            $error =  $this->upload->display_errors();
-            echo $error;
-            return $error; //figure out how to display the error most likely parse in JSON and return.
-          } 
-    
-          $picture = $this->upload->data();
-  
-          $this->load->library('image_lib');  
-          $this->image_lib->clear();
-  
-          $this->image_lib->initialize(array(
-           'image_library' => 'gd2',
-           'source_image' => 'uploads/full/'.$picture['file_name'],
-           'new_image' => 'uploads/thumbs/'.$picture['file_name'],
-           'maintain_ratio' => TRUE,
-           'quality' => '100%',
-           'width' => 602,
-           'height' => 237
-          ));
-     
-     
-          if(!$this->image_lib->resize()){  
-            $error = $this->image_lib->display_errors();    
-          }
-          
-          if(!$this->addImagesDatabase($data,$picture,$imageId,$album_id))
-          {
-             //$error = "Album name already exists";
-             //echo $error;
-             return $error; //figure out how to display the error most likely parse in JSON and return.
-         }        
-        }
+        //add image to database.
+         if(!$this->addImagesDatabase($data,$picture,$imageId,$album_id))
+         {
+             //show_error("System Error. Please try again later.",500);
+             $this->output->set_header("HTTP/1.1 500 Internal Server Error");
+         }
+
+        //Try uploading the image and if uploads fails then remove the image from database.
+        $this->saveImageToBlob($imageId,$data);
+
+        //Creat Image thumbnail and push that to blob storage as well
     }
 
-    private function createAlbumDatabase($data, $album_id)
+    public function createAlbumDatabase($data)
     {
-        try
-        {
-            $sql = "INSERT INTO albums (user_created, albumName,privacy,totalImages,albumId)
-                    VALUES (" .$this->db->escape($data['username']).", " .$this->db->escape($data['albumName']).", ".$this->db->escape($data['privacy']).", ".count($_FILES['file_up']['name']).", '".$album_id."')";
+        $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
+        $sql = "INSERT INTO albums (user_created, albumName,privacy,albumId)
+                VALUES (" .$this->db->escape($data['username']).", ".strtoupper($this->db->escape($data['albumName'])).", ".$this->db->escape($data['privacy']).", '".$album_id."')";
 
-            $query = $this->db->query($sql);
+        $query = $this->db->query($sql);
 
-            if($this->db->affected_rows() == 1) //album was created.
-                return TRUE;
-            else
-                return FALSE; //album name already exists.
-        }
-        catch(Exception $error)
-        {
-            //var_dump ($this->db->error_message());
-            //catch exception if the database is offline.
-        }
+        if($this->db->affected_rows() == 1) //album was created.
+            return TRUE;
+        else
+            return FALSE; //album name already exists.
     }
 
     private function addImagesDatabase($data,$picture,$imageId, $album_id)
     {
+        $sql = "INSERT INTO images (owner_userId, albumId,privacy,imageName,imageId)
+                VALUES (" .$this->db->escape($data['username']).", '" .$album_id."', ".$this->db->escape($data['privacy']).", '".$picture."', '".$imageId."')";
+
+        $query = $this->db->query($sql);
+
+        if($this->db->affected_rows() == 1) //album was created.
+            return TRUE;
+        else
+            return FALSE; //album name already exists.
+    }
+
+    private function rollBackImage($imageId)
+    {
+        $sql = "DELETE FROM images WHERE imageId='".$imageId."'";
+
+        $query = $this->db->query($sql);
+    }
+
+    private function saveImageToBlob($imageId,$data)
+    {
         try
         {
-            $sql = "INSERT INTO images (owner_userId, albumId,privacy,imageName,imageId)
-                    VALUES (" .$this->db->escape($data['username']).", '" .$album_id."', ".$this->db->escape($data['privacy']).", '".$picture['client_name']."', '".$imageId."')";
+            $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
+            $type = explode(".",$_FILES['Filedata']['name']);
+            $blobName = $imageId.'.'.$type[1];
 
-            $query = $this->db->query($sql);
+            $blockMaxSize = 4*1024*1024; //4MB
+            $fileSize = $_FILES['Filedata']['size'];
+            $numOfBlocks = $fileSize/$blockMaxSize;
+            $currentFileIndex = 0;
+            $blockId=1;
+            $blocklist = new BlockList();
+            while($numOfBlocks>0)
+            {
+                $content = file_get_contents($_FILES['Filedata']['tmp_name'],NULL,NULL,$currentFileIndex,$blockMaxSize);
+                $currentFileIndex+=$blockMaxSize;
+                $numOfBlocks-=1; //Read the current block.
 
-            if($this->db->affected_rows() == 1) //album was created.
-                return TRUE;
-            else
-                return FALSE; //album name already exists.
+                //upload the block
+                $blobRestProxy->createBlobBlock(Actual_Image, $blobName, md5($blockId),$content);
+                $blocklist->addLatestEntry(md5($blockId));
+                $blockId++;
+            }
+
+            $blobRestProxy->commitBlobBlocks(Actual_Image, $blobName, $blocklist->getEntries());
         }
-        catch(Exception $error)
+        catch (ServiceException $e)
         {
-            //var_dump ($this->db->error_message());
-            //catch exception if the database is offline.
+            $username = $data['username'];
+            $albumName = $data['albumName'];
+            $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
+            $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
+            $this->rollBackImage($imageId);
+            //show_error($e->getErrorText(),502);
+            $this->output->set_header("HTTP/1.1 502 Bad Gateway");
         }
+        catch (Exception $e)
+        {
+            $username = $data['username'];
+            $albumName = $data['albumName'];
+            $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
+            $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
+            $this->rollBackImage($imageId);
+            $this->output->set_header("HTTP/1.1 502 Bad Gateway");
+            //show_error($e->getMessage(),502);
+        }
+
+    }
+
+    private function imageExists($data)
+    {
+        //This function verifies if the particular image already exists in the database.
+        //An image exists in the database if the same user uploads an image with the same name to the same album!
+        //In a collaborated album, if a user uploads an image to album which had the name similar to the image by another user, then it will not be counted as duplicate, i.e. image upload should work!
+        $username = $data['username'];
+        $albumName = $data['albumName'];
+        $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
+
+        $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
+
+        $sql = "SELECT imageName FROM images WHERE imageId='".$imageId."'";
+        $query = $this->db->query($sql);
+
+        if($query->num_rows() == 0) //No Image exists
+        {
+            return TRUE;
+        }
+        else
+            return FALSE; //Image exists.
     }
 }
 ?>

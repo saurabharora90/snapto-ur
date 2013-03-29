@@ -9,6 +9,7 @@
         <!-- Le styles -->
         <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
         <link href="../assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../assets/uploadify/uploadify.css" />
 
         <style>
             body { padding: 30px }
@@ -21,59 +22,72 @@
     </head>
         <body>
             <h1>Create a New Album</h1>
-            <form action="../album/createAlbum/uploadImages" method="post" enctype="multipart/form-data">
-                <input type="text" name="albumName" id="albumName" placeholder="Album Name"/>
-                <label for="privacy">Album Privacy:</label>
-                <select name="privacy">
-                    <option>Private</option>
-                    <option>Public</option>
-                </select></br>
-                <input type="file" name="file_up[]" id="file_up" multiple accept="image/png, image/jpg, image/jpeg">
-                <input type="submit" value="Upload images" class="btn">
-            </form>
-
-            <div class="progress progress-striped">
-                <div class="bar"></div >
-                <div class="percent">0%</div >
+            <input type="text" name="albumName" id="albumName" placeholder="Album Name"/>
+            <div id="album_error"></div>
+            <label for="privacy">Album Privacy:</label>
+            <select name="privacy" id="privacy">
+                <option>Private</option>
+                <option>Public</option>
+            </select></br>
+            <input type="file" name="file_up" id="file_up" accept="image/jpg, image/jpeg">
+            <input type="submit" id="upload" value="Create Album" class="btn btn-success">
+            <div>
+                <h4 id="errorHeading">Upload Errors:</h4>
+                <ul id="uploadError"></ul>
             </div>
-    
-    <div id="status"></div>
-    
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="http://malsup.github.com/jquery.form.js"></script>
-<script>
-    (/*function () {
-
-        var bar = $('.bar');
-        var percent = $('.percent');
-        var status = $('#status');
-
-        $('form').ajaxForm(
-            { datatype: "json",
-                beforeSubmit: function (arr, $form, options) {
-                    status.empty();
-                    var percentVal = '0%';
-                    bar.width(percentVal)
-                    percent.html(percentVal);
-
-                    if (!$('#file_up').val()) { status.html("No file selected"); return false; }
-
-                    if (!$('#albumName').val()) { status.html("Enter an album name."); return false; }
-                },
-                uploadProgress: function (event, position, total, percentComplete) {
-                    var percentVal = percentComplete + '%';
-                    bar.width(percentVal)
-                    percent.html(percentVal);
-                    //status.html(position);
-                },
-                success: function (data, textStatus) {
-                    var result = jQuery.parseJSON(data);
-                    //status.html(result.name);
-                }
-            });
-
-    })();
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script type="text/javascript" src="../assets/uploadify/jquery.uploadify.min.js"></script>
+            <script type="text/javascript">
+                $(function () {
+                    var base_url = '<?php echo base_url(); ?>';
+                    $('#errorHeading').hide();
+                    $('#file_up').uploadify({
+                        'swf': base_url + 'assets/uploadify/uploadify.swf',
+                        'uploader': base_url + 'album/createAlbum/uploadImages',
+                        // Put your options here
+                        'progressData': 'percentage',
+                        'auto': false,
+                        'successTimeout': 6000,
+                        'debug': 'true',
+                        'multi': true,
+                        'fileTypeExts': '*.jpg; *.jpeg',
+                        'fileTypeDesc': 'Supported Images',
+                        'onUploadStart': function () { $('#file_up').uploadify('settings', 'formData', { 'albumName': $('#albumName').val(), 'privacy': $('#privacy').val() }); },
+                        'onUploadError': function (file, errorCode, errorMsg, errorString) {
+                            $('#errorHeading').show();
+                            var error = $('#uploadError').html();
+                            error = error + '<li>' + file.name;
+                            if (errorMsg == '500')
+                                error = error + ': System Error. Please try again later.';
+                            if (errorMsg == '501')
+                                error = error + ': Duplicate Image names.';
+                            if (errorMsg == '502')
+                                error = error + ': Image upload failure. Try uploading again';
+                            error = error + '</li>';
+                            $('#uploadError').html(error);
+                        }
+                    });
+                });
+            </script>
+            <script type="text/javascript">
+                $('#upload').click(function () {
+                    var albumError = $("#album_error");
+                    if (!$('#albumName').val()) {
+                        albumError.html("Enter an album name.");
+                        return false;
+                    }
+                    else {
+                        //Post the album name to database
+                        albumError.html("");
+                        $.post('createAlbum/storeAlbum', { albumName: $('#albumName').val(), privacy: $('#privacy').val() }, function (data) {
+                            if (data == "") {
+                                $('#file_up').uploadify('upload', '*');
+                            }
+                            else
+                                albumError.html(data);
+                        });
+                    }
+                });
 </script>
-
         </body>		 
 </html>

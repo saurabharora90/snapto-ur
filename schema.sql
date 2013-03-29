@@ -15,7 +15,6 @@ CREATE TABLE albums   /*represents the album created by the as user*/
 user_created varchar(50) NOT NULL,
 albumName varchar(100) NOT NULL,
 privacy varchar(10) NOT NULL,
-totalImages int Default 0,
 date_uploaded TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 albumId varchar(32) NOT NULL,
 PRIMARY KEY (albumId), /*album ID will be a MD5 hash of albumName and user_created*/

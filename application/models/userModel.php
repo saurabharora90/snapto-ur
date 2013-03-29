@@ -3,7 +3,7 @@ Class userModel extends CI_Model
 {
     function getCreatedAlbums($username)
     {
-        $sql = "SELECT albumName, totalImages, albumId
+        $sql = "SELECT albumName, albumId
                 FROM albums
                 WHERE user_created =".$this->db->escape($username);
 
@@ -16,7 +16,7 @@ Class userModel extends CI_Model
     //Use the views for these two functions
     /*function getSharedAlbums($username)
     {
-        $sql = "SELECT albumName, totalImages, albumId
+        $sql = "SELECT albumName, albumId
                 FROM albums
                 WHERE user_created =".$this->db->escape($username);
 
@@ -28,7 +28,7 @@ Class userModel extends CI_Model
 
     function getCollaboratedAlbums($username)
     {
-        $sql = "SELECT albumName, totalImages, albumId
+        $sql = "SELECT albumName, albumId
                 FROM albums
                 WHERE user_created =".$this->db->escape($username);
 

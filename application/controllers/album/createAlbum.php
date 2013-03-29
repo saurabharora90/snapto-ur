@@ -32,13 +32,23 @@ class createAlbum extends CI_Controller {
 
  function uploadImages()
  {
-     //var_dump($_FILES);
      $this->load->model('album/createAlbumModel');
      $data = $this->getSessionData();
      $data['albumName'] = $this->input->post('albumName');
      $data['privacy'] = $this->input->post('privacy');
 
      $this->createAlbumModel->uploadImages($data);
+ }
+
+ function storeAlbum()
+ {
+     $this->load->model('album/createAlbumModel');
+     $data = $this->getSessionData();
+     $data['albumName'] = $this->input->post('albumName');
+     $data['privacy'] = $this->input->post('privacy');
+
+     if(!$this->createAlbumModel->createAlbumDatabase($data))
+        echo "You already have an album with this name";
  }
 }
 ?>

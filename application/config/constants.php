@@ -40,7 +40,8 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 |My Constats
 */
 
-define('IS_AJAX', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-
+//Remeber to remove development storage during deployment.
+define('blobConnectionString', 'DefaultEndpointsProtocol=http;AccountName=snaptour;AccountKey=Z2il1KKalrKC+ggAMPITnRZpLidWbg+S+N2TYpebGNPDgyrHm/G1o5tJGZeEcmU3z4lxIqdNzA8mflj+pDecdg==');
+define('Actual_Image',  'imageuploads');
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
