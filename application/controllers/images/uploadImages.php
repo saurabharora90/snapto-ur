@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 session_start(); //we need to call PHP's session object to access it through CI
 
-class createAlbum extends CI_Controller {
+class uploadImages extends CI_Controller {
 
  function __construct()
  {
@@ -23,22 +23,14 @@ class createAlbum extends CI_Controller {
      return $data;
  }
 
- function index()
+ function upload()
  {
-     $data = $this->getSessionData();
-     $data['error']= '';
-     $this->load->view('user/album/createAlbum_view', $data);
- }
-
- function storeAlbum()
- {
-     $this->load->model('album/createAlbumModel');
+     $this->load->model('images/uploadImagesModel');
      $data = $this->getSessionData();
      $data['albumName'] = $this->input->post('albumName');
      $data['privacy'] = $this->input->post('privacy');
 
-     if(!$this->createAlbumModel->createAlbumDatabase($data))
-        echo "You already have an album with this name";
+     $this->uploadImagesModel->uploadImages($data);
  }
 }
 ?>

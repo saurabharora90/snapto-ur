@@ -43,7 +43,7 @@
                     $('#errorHeading').hide();
                     $('#file_up').uploadify({
                         'swf': base_url + 'assets/uploadify/uploadify.swf',
-                        'uploader': base_url + 'album/createAlbum/uploadImages',
+                        'uploader': base_url + 'images/uploadImages/upload',
                         // Put your options here
                         'progressData': 'percentage',
                         'auto': false,

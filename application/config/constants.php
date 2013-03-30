@@ -42,6 +42,9 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 //Remeber to remove development storage during deployment.
 define('blobConnectionString', 'DefaultEndpointsProtocol=http;AccountName=snaptour;AccountKey=Z2il1KKalrKC+ggAMPITnRZpLidWbg+S+N2TYpebGNPDgyrHm/G1o5tJGZeEcmU3z4lxIqdNzA8mflj+pDecdg==');
+define('tableConnectionString', 'DefaultEndpointsProtocol=http;AccountName=snaptour;AccountKey=Z2il1KKalrKC+ggAMPITnRZpLidWbg+S+N2TYpebGNPDgyrHm/G1o5tJGZeEcmU3z4lxIqdNzA8mflj+pDecdg==');
 define('Actual_Image',  'imageuploads');
+define('Thumbnail', 'thumbnails');
+//define('Metadata_Table', )
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
