@@ -17,7 +17,7 @@ Class uploadImagesModel extends CI_Model
     {
          $username = $data['username'];
          $albumName = $data['albumName'];
-         $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
+         $album_id = md5(strtoupper($this->db->escape($data['albumName'])).$this->db->escape($data['username']));
 
          $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
          $picture = strtoupper($_FILES['Filedata']['name']);
@@ -37,7 +37,6 @@ Class uploadImagesModel extends CI_Model
              //show_error("System Error. Please try again later.",500);
              $this->output->set_header("HTTP/1.1 500 Internal Server Error");
          }
-
         //Try uploading the image and if uploads fails then remove the image from database.
         $this->saveImageToBlob($imageId,$data);
 
@@ -54,7 +53,6 @@ Class uploadImagesModel extends CI_Model
                 VALUES (" .$this->db->escape($data['username']).", '" .$album_id."', ".$this->db->escape($data['privacy']).", '".$picture."', '".$imageId."')";
 
         $query = $this->db->query($sql);
-
         if($this->db->affected_rows() == 1) //album was created.
             return TRUE;
         else
@@ -118,6 +116,7 @@ Class uploadImagesModel extends CI_Model
             $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
             $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
             $this->rollBackImage($imageId);
+            var_dump($e->getMessage());
             $this->output->set_header("HTTP/1.1 502 Bad Gateway");
             //show_error($e->getMessage(),502);
             

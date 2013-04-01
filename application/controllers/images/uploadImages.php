@@ -26,17 +26,17 @@ class uploadImages extends CI_Controller {
  function upload()
  {
      //can only be access by a ajax request
-     if($this->input->is_ajax_request())
-     {
+     //if($this->input->is_ajax_request())
+     //{
          $this->load->model('images/uploadImagesModel');
          $data = $this->getSessionData();
          $data['albumName'] = $this->input->post('albumName');
          $data['privacy'] = $this->input->post('privacy');
 
          $this->uploadImagesModel->uploadImages($data);
-     }
-     else
-        show_404('images/uploadimages/upload');
+     //}
+     //else
+       // show_404('images/uploadimages/upload');
  }
 }
 ?>
