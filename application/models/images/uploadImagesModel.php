@@ -1,4 +1,4 @@
-<?php 
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  require_once("/application/libraries/WindowsAzure/WindowsAzure.php");
  use WindowsAzure\Common\ServicesBuilder;
  use WindowsAzure\Common\ServiceException;
@@ -39,7 +39,7 @@ Class uploadImagesModel extends CI_Model
          }
 
         //Try uploading the image and if uploads fails then remove the image from database.
-        //$this->saveImageToBlob($imageId,$data);
+        $this->saveImageToBlob($imageId,$data);
 
         //Creat Image thumbnail and push that to blob storage as well
         //$this->saveThumbnail($imageId);
@@ -72,7 +72,10 @@ Class uploadImagesModel extends CI_Model
     {
         try
         {
-            $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
+            if(ENVIRONMENT == 'development')
+                $blobRestProxy = ServicesBuilder::getInstance()->createBlobService('UseDevelopmentStorage=true');
+            if(ENVIRONMENT == 'production')
+                $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
             $type = explode(".",$_FILES['Filedata']['name']);
             $blobName = $imageId.'.'.$type[1];
 
@@ -103,9 +106,10 @@ Class uploadImagesModel extends CI_Model
             $album_id = md5($this->db->escape($data['albumName']).$this->db->escape($data['username']));
             $imageId = md5($username.$album_id.$_FILES['Filedata']['name']);
             $this->rollBackImage($imageId);
+            var_dump($e->getMessage());
             //show_error($e->getMessage(),502);
             $this->output->set_header("HTTP/1.1 502 Bad Gateway");
-            return;
+            $this->output->set_output(); //force the controller to terminate here coz if the upload failed then we don't need to store metadata for this image.
         }
         catch (Exception $e)
         {
@@ -116,7 +120,8 @@ Class uploadImagesModel extends CI_Model
             $this->rollBackImage($imageId);
             $this->output->set_header("HTTP/1.1 502 Bad Gateway");
             //show_error($e->getMessage(),502);
-            return;
+            
+            $this->output->set_output(); //force the controller to terminate here coz if the upload failed then we don't need to store metadata for this image.
         }
 
     }
@@ -139,10 +144,52 @@ Class uploadImagesModel extends CI_Model
         $datetime = $this->my_metadata->getDateTimeOriginal();
         $imageSettings = $this->my_metadata->getImageSettings(); //some items might be unavaliable! Decide whether or not to store them.
 
-        //var_dump($gps,$datetime,$imageSettings);
+        //var_dump($imageSettings);
 
         //Save image metadata to table storage
-        $tableRestProxy = ServicesBuilder::getInstance()->createTableService(tableConnectionString);
+        if(ENVIRONMENT == 'development')
+            $tableRestProxy = ServicesBuilder::getInstance()->createTableService('UseDevelopmentStorage=true');
+        if(ENVIRONMENT == 'production')
+            $tableRestProxy = ServicesBuilder::getInstance()->createTableService(tableConnectionString);
+        
+        $entity = new Entity();
+        $entity->setPartitionKey($album_id);
+        $entity->setRowKey($imageId);
+        if($gps!=FALSE)
+        {
+            foreach($gps as $key=>$value)
+            {
+                $entity->addProperty($key,EdmType::DOUBLE,$value);
+            }
+        }
+        if($datetime!=FALSE)
+        {
+            $entity->addProperty('DateTimeOriginal',EdmType::DATETIME, DateTime::createFromFormat("Y:m:d H:i:s",$datetime)); //This is the format specified in the EXIF document
+        }
+
+        //The time will be stored in the metadata table as per GMT time equivalent.
+        
+        foreach($imageSettings as $key=>$value)
+        {
+            if($key=='ISOSpeedRatings' && $value!="Unavailable")
+                $entity->addProperty($key,EdmType::INT32,$value);  //ISOSpeedRatings is of type integer.
+            elseif($value!="Unavailable")
+                $entity->addProperty($key,EdmType::STRING,$value);
+        }
+
+        try
+        {
+            $tableRestProxy->insertEntity(Metadata_table, $entity);
+        }
+        catch(ServiceException $e)
+        {
+            // Handle exception based on error codes and messages.
+            // Error codes and messages are here: 
+            // http://msdn.microsoft.com/en-us/library/windowsazure/dd179438.aspx
+            $code = $e->getCode();
+            $error_message = $e->getMessage();
+            echo $code." ".$error_message;
+        }
     }
 
     private function imageExists($data)

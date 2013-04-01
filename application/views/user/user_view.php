@@ -18,6 +18,15 @@
                     echo "You have created ".$createdAlbumsNo." albums"; //more than 1 album, hence 'albums'
                 else //1 or 0 'album'
                     echo "You have created ".$createdAlbumsNo." album";
+
+                echo "<ul>";
+                for($i = 0; $i<$createdAlbumsNo; $i++)
+                {
+                    $albumName[$i] = $created_album_info[$i]["albumName"];
+                    $albumId[$i] = $created_album_info[$i]["albumId"];
+                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId[$i].">".$albumName[$i]."</li>";
+                }
+                echo "</ul>";
             ?>
         </p>
         <a href="../user/logout">Logout</a> </br>

@@ -1,5 +1,4 @@
-
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 Class loginModel extends CI_Model
 {
  function login_verify($username, $password)

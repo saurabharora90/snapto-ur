@@ -9,6 +9,8 @@ class login extends CI_Controller {
     
     public function index()
 	{
+        if($this->session->userdata('logged_in'))
+            redirect('user','refresh');
         $this->load->helper(array('form'));
         $this->load->view("login_view");
 	}

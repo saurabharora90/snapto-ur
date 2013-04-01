@@ -16,15 +16,18 @@ This helps in making sure that no one will realize if the album id he/she put in
 
 class viewAlbum extends CI_Controller {
 
+    var $userdata   =   "";
+
  function __construct()
  {
    parent::__construct();
 
-   if($this->session->userdata('logged_in'));
+   if($this->session->userdata('logged_in'))
+     $this->userdata = $this->getSessionData();
    else
    {
-       //If no session, redirect to login page
-     redirect('login', 'refresh');
+        //If no session, redirect to login page
+        redirect('login', 'refresh');
    }
  }
 
@@ -36,9 +39,26 @@ class viewAlbum extends CI_Controller {
      return $data;
  }
 
- function album($albumId)
+ function myAlbum($albumId, $percent = 30)
  {
-     
+    $this->load->model("album/viewAlbumModel");
+    $result = $this->viewAlbumModel->myAlbum($albumId,$this->userdata, $percent);
+ 
+    if(empty($result)) //user does not own the album
+       show_404("album/viewAlbum/myAlbum");
+
+    else
+    {
+        //var_dump($imagesToDisplay);
+        $data["albumName"] = $result[0];
+        $data["displayImages"] = $result[1];
+        $data["totalImagesInAlbum"] = $result[2];
+        $data["imageURL"] = Actual_Image_blobURL;
+        $data["name"] = $this->userdata["name"];
+        $data["albumId"] = $albumId;
+        //$data["percent"] = $percent;
+        $this->load->view("user/album/viewAlbum_view",$data);
+    }
  }
 
  function sharedAlbum($albumId)
@@ -49,6 +69,28 @@ class viewAlbum extends CI_Controller {
  function collaboratedAlbum($albumId)
  {
      
+ }
+
+ function sliderUpdate($albumId, $percent)
+ {
+     if($this->input->is_ajax_request())
+     {
+        $this->load->model("album/viewAlbumModel");
+        $result = $this->viewAlbumModel->myAlbum($albumId,$this->userdata, $percent);
+ 
+        if(empty($result)) //user does not own the album
+           show_404("album/viewAlbum/myAlbum");
+
+        else
+        {
+            $data["displayImages"] = $result[1];
+            $data["totalImagesInAlbum"] = $result[2];
+            $data["imageURL"] = Actual_Image_blobURL;
+            echo json_encode($data);
+         }
+     }
+     else
+        show_404('album/viewAlbum/sliderUpdate');
  }
 }
 

@@ -7,7 +7,7 @@ name varchar(50) NOT NULL
 
 CREATE TABLE privacy
 (
-type varchar(10) PRIMARY KEY CHECK(type='Public' OR type='Private')
+type varchar(10) PRIMARY KEY CHECK(type='Public' OR type='Private' OR type='Shared')
 );
 
 CREATE TABLE albums   /*represents the album created by the as user*/

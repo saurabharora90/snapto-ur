@@ -27,7 +27,6 @@ class User extends CI_Controller {
  function index()
  {
     $data = $this->getSessionData();
- 
     $this->load->model('userModel');
     $data['created_album_info'] = $this->userModel->getCreatedAlbums($data['username']);
     //var_dump($data);

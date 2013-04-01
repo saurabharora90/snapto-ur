@@ -32,13 +32,19 @@ class createAlbum extends CI_Controller {
 
  function storeAlbum()
  {
-     $this->load->model('album/createAlbumModel');
-     $data = $this->getSessionData();
-     $data['albumName'] = $this->input->post('albumName');
-     $data['privacy'] = $this->input->post('privacy');
+     //can only be called via a ajax request
+     if($this->input->is_ajax_request())
+     {
+         $this->load->model('album/createAlbumModel');
+         $data = $this->getSessionData();
+         $data['albumName'] = $this->input->post('albumName');
+         $data['privacy'] = $this->input->post('privacy');
 
-     if(!$this->createAlbumModel->createAlbumDatabase($data))
-        echo "You already have an album with this name";
+         if(!$this->createAlbumModel->createAlbumDatabase($data))
+            echo "You already have an album with this name";
+     }
+     else
+        show_404('album/createalbum/storealbum');
  }
 }
 ?>

@@ -114,7 +114,7 @@ class My_metadata{
             $imageSpecific['FocalLength'] = $notFound;
 
         //convert strings to numbers
-        foreach($imageSpecific as $key => $value)
+        /*foreach($imageSpecific as $key => $value)
         {
             $pos = strpos($value, '/');
             if($pos !== false)
@@ -122,7 +122,7 @@ class My_metadata{
                 $temp = explode('/',$value);
                 $imageSpecific[$key] = $temp[0] / $temp[1];
             }
-        }
+        }*/
 
         return $imageSpecific;
     }

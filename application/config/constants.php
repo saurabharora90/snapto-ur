@@ -45,6 +45,12 @@ define('blobConnectionString', 'DefaultEndpointsProtocol=http;AccountName=snapto
 define('tableConnectionString', 'DefaultEndpointsProtocol=http;AccountName=snaptour;AccountKey=Z2il1KKalrKC+ggAMPITnRZpLidWbg+S+N2TYpebGNPDgyrHm/G1o5tJGZeEcmU3z4lxIqdNzA8mflj+pDecdg==');
 define('Actual_Image',  'imageuploads');
 define('Thumbnail', 'thumbnails');
+define('Metadata_table', 'metadata');
+
+if(ENVIRONMENT == 'development')
+    define('Actual_Image_blobURL', 'http://127.0.0.1:10000/devstoreaccount1/imageuploads/');
+else
+    define('Actual_Image_blobURL', 'http://snaptour.blob.core.windows.net/imageuploads/');
 //define('Metadata_Table', )
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

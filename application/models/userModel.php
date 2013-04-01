@@ -1,4 +1,4 @@
-﻿<?php
+﻿<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 Class userModel extends CI_Model
 {
     function getCreatedAlbums($username)
@@ -6,8 +6,6 @@ Class userModel extends CI_Model
         $sql = "SELECT albumName, albumId
                 FROM albums
                 WHERE user_created =".$this->db->escape($username);
-
-                //echo $sql."</br>";
         
         $query = $this->db->query($sql);
         return $query->result_array();
