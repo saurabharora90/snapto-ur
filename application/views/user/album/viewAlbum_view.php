@@ -18,7 +18,7 @@
     </head>
     <body>
         <h3 id="Name_album"><?php echo $albumName?></h3>
-        <h6 hidden id="Id_album"><?php echo $albumId?></h6>
+        <h6 id="Id_album"><?php echo $albumId?></h6>
         <p id="ImagesNo"> Showing <?php echo count($displayImages)." Images out of ". $totalImagesInAlbum." in the album.";?></p>
         <div class="row">
             <div class="span4">
@@ -47,6 +47,7 @@
         <script type="text/javascript" src="/assets/fancybox/helpers/jquery.fancybox-buttons.js"></script>
         <script type="text/javascript">
             $(document).ready(function () {
+                $("#Id_album").hide();
                 $(".fancybox").fancybox({
                     prevEffect: 'none',
                     nextEffect: 'none',

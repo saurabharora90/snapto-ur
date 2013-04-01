@@ -46,6 +46,11 @@ class viewAlbum extends CI_Controller {
  
     if(empty($result)) //user does not own the album
        show_404("album/viewAlbum/myAlbum");
+    if($result[1] == "No images in this album")
+    {
+        echo $result[1];
+        return;
+    }
 
     else
     {
