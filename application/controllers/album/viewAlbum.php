@@ -59,6 +59,7 @@ class viewAlbum extends CI_Controller {
         $data["displayImages"] = $result[1];
         $data["totalImagesInAlbum"] = $result[2];
         $data["imageURL"] = Actual_Image_blobURL;
+        $data["thumbUrl"] = Thumbnail_Image_blobURL;
         $data["name"] = $this->userdata["name"];
         $data["albumId"] = $albumId;
         //$data["percent"] = $percent;
@@ -91,6 +92,7 @@ class viewAlbum extends CI_Controller {
             $data["displayImages"] = $result[1];
             $data["totalImagesInAlbum"] = $result[2];
             $data["imageURL"] = Actual_Image_blobURL;
+            $data["thumbUrl"] = Thumbnail_Image_blobURL;
             echo json_encode($data);
          }
      }

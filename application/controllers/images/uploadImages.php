@@ -32,7 +32,6 @@ class uploadImages extends CI_Controller {
          $data = $this->getSessionData();
          $data['albumName'] = $this->input->post('albumName');
          $data['privacy'] = $this->input->post('privacy');
-
          $this->uploadImagesModel->uploadImages($data);
      //}
      //else

@@ -27,19 +27,19 @@
             <div class="span8">
             </div>
         </div>
-
-        <ol id="listOfImages">
+        </br>  </br>
+        <ul id="listOfImages" class="thumbnails">
             <?php
                 foreach($displayImages as $image)
                 {
-                    echo "<li>";
-                    echo "<a class=\"fancybox\" rel=\"gallery\" href=".$imageURL.$image["imageId"].".JPG>";
-                    echo $image["imageName"];
-                    echo "</a>";
+                    echo "<li class=\"span2\">";
+                    echo "<a class=\"fancybox\" rel=\"gallery\" href=".$imageURL.$image["imageId"].".JPG title=".$image["imageName"].">";
+                    echo "<img src=".$thumbUrl.$image["imageId"].".JPG ";
+                    echo "/> </a>";
                     echo "</li>";
                 }
             ?>
-        </ol>
+        </ul>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
@@ -53,7 +53,7 @@
                     nextEffect: 'none',
                     helpers: {
                         title: {
-                            type: 'outside'
+                            type: 'inside'
                         },
                         buttons: {}
                     }
@@ -68,14 +68,14 @@
                     $.post("/album/viewalbum/sliderupdate/" + albumId + "/" + ui.value, function (data) {
                         var result = JSON.parse(data);
                         $("#ImagesNo").html("Showing " + result.displayImages.length + " Images out of " + result.totalImagesInAlbum + " in the album");
-                        var listofImages = "<ol>";
+                        var listofImages = "";
                         for (var i = 0; i < result.displayImages.length; i++) {
-                            listofImages = listofImages + "<li>";
-                            listofImages = listofImages + "<a class=\"fancybox\" rel=\"gallery\" href=" + result.imageURL + result.displayImages[i].imageId + ".JPG>";
-                            listofImages = listofImages + result.displayImages[i].imageName;
-                            listofImages = listofImages + "</a></li>";
+                            listofImages = listofImages + "<li class=\"span2\">";
+                            listofImages = listofImages + "<a class=\"fancybox\" rel=\"gallery\" href=" + result.imageURL + result.displayImages[i].imageId + ".JPG title=" + result.displayImages[i].imageName + ">";
+                            listofImages = listofImages + "<img src="+ result.thumbUrl + result.displayImages[i].imageId + ".JPG ";
+                            listofImages = listofImages + "/> </a></li>";
                         }
-                        listofImages = listofImages + "</ol>";
+                        //listofImages = listofImages + "</ul>";
                         $("#listOfImages").html(listofImages);
                     });
                 }

@@ -48,9 +48,15 @@ define('Thumbnail', 'thumbnails');
 define('Metadata_table', 'metadata');
 
 if(ENVIRONMENT == 'development')
+{
     define('Actual_Image_blobURL', 'http://127.0.0.1:10000/devstoreaccount1/imageuploads/');
+    define('Thumbnail_Image_blobURL', 'http://127.0.0.1:10000/devstoreaccount1/thumbnails/');
+}
 else
+{
     define('Actual_Image_blobURL', 'http://snaptour.blob.core.windows.net/imageuploads/');
+    define('Thumbnail_Image_blobURL', 'http://snaptour.blob.core.windows.net/thumbnails/');
+}
 //define('Metadata_Table', )
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

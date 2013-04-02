@@ -37,11 +37,9 @@ Class uploadImagesModel extends CI_Model
              //show_error("System Error. Please try again later.",500);
              $this->output->set_header("HTTP/1.1 500 Internal Server Error");
          }
+
         //Try uploading the image and if uploads fails then remove the image from database.
         $this->saveImageToBlob($imageId,$data);
-
-        //Creat Image thumbnail and push that to blob storage as well
-        //$this->saveThumbnail($imageId);
 
         //Extract image metadata and store it
         $this->saveMetadata($imageId, $album_id);
@@ -96,6 +94,9 @@ Class uploadImagesModel extends CI_Model
             }
 
             $blobRestProxy->commitBlobBlocks(Actual_Image, $blobName, $blocklist->getEntries());
+
+            //Creat Image thumbnail and push that to blob storage as well
+            $this->saveThumbnail($imageId);
         }
         catch (ServiceException $e)
         {
@@ -127,10 +128,47 @@ Class uploadImagesModel extends CI_Model
 
     private function saveThumbnail($imageId)
     {
-        $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
+        if(ENVIRONMENT == 'development')
+            $blobRestProxy = ServicesBuilder::getInstance()->createBlobService('UseDevelopmentStorage=true');
+        if(ENVIRONMENT == 'production')
+            $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
+        
         $type = explode(".",$_FILES['Filedata']['name']);
         $blobName = $imageId.'.'.$type[1];
 
+        //create thumbnail on the fly
+        $info = getimagesize($_FILES['Filedata']['tmp_name']);
+        $width  = isset($info['width'])  ? $info['width']  : $info[0];
+        $height = isset($info['height']) ? $info['height'] : $info[1];
+        $maxSize = 250;
+        $wRatio = $maxSize / $width;
+        $hRatio = $maxSize / $height;
+        $sourceImage = imagecreatefromstring(file_get_contents($_FILES['Filedata']['tmp_name']));
+
+        // Calculate a proportional width and height no larger than the max size.
+        if ( ($width <= $maxSize) && ($height <= $maxSize) )
+        {
+            // Input is smaller than thumbnail, do nothing
+            return $sourceImage;
+        }
+        elseif ( ($wRatio * $height) < $maxSize )
+        {
+            // Image is horizontal
+            $tHeight = ceil($wRatio * $height);
+            $tWidth  = $maxSize;
+        }
+        else
+        {
+            // Image is vertical
+            $tWidth  = ceil($hRatio * $width);
+            $tHeight = $maxSize;
+        }
+        $thumb = imagecreatetruecolor($tWidth, $tHeight);
+        imagecopyresampled($thumb, $sourceImage, 0, 0, 0, 0, $tWidth, $tHeight, $width, $height);
+        imagedestroy($sourceImage);
+        $thumbImage="thumb.jpg";
+        imagejpeg($thumb,$thumbImage); //this might not work on the server
+        $content = file_get_contents($thumbImage);
         $blobRestProxy->createBlockBlob(Thumbnail, $blobName, $content);
     }
 
