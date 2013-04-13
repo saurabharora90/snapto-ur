@@ -38,6 +38,8 @@ Class uploadImagesModel extends CI_Model
              $this->output->set_header("HTTP/1.1 500 Internal Server Error");
          }
 
+         //echo pathinfo($_FILES['Filedata']['name'], PATHINFO_EXTENSION);
+
         //Try uploading the image and if uploads fails then remove the image from database.
         $this->saveImageToBlob($imageId,$data);
 
@@ -72,8 +74,9 @@ Class uploadImagesModel extends CI_Model
                 $blobRestProxy = ServicesBuilder::getInstance()->createBlobService('UseDevelopmentStorage=true');
             if(ENVIRONMENT == 'production')
                 $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
-            $type = explode(".",$_FILES['Filedata']['name']);
-            $blobName = $imageId.'.'.$type[1];
+            //$type = explode(".",$_FILES['Filedata']['name']);
+            $type = pathinfo($_FILES['Filedata']['name'], PATHINFO_EXTENSION);
+            $blobName = $imageId.'.'.strtoupper($type);
 
             $blockMaxSize = 4*1024*1024; //4MB
             $fileSize = $_FILES['Filedata']['size'];
@@ -133,8 +136,9 @@ Class uploadImagesModel extends CI_Model
         if(ENVIRONMENT == 'production')
             $blobRestProxy = ServicesBuilder::getInstance()->createBlobService(blobConnectionString);
         
-        $type = explode(".",$_FILES['Filedata']['name']);
-        $blobName = $imageId.'.'.$type[1];
+        //$type = explode(".",$_FILES['Filedata']['name']);
+        $type = pathinfo($_FILES['Filedata']['name'], PATHINFO_EXTENSION);
+        $blobName = $imageId.'.'.strtoupper($type);
 
         //create thumbnail on the fly
         $info = getimagesize($_FILES['Filedata']['tmp_name']);

@@ -34,6 +34,9 @@ class My_filterImages{
         $toShow = (($this->percent) * ($result->cnt))/100;
         $toShow = floor($toShow);
 
+        if($toShow == 0)
+            $toShow = $result->cnt;
+
         $sql = "SELECT privacy, imageName, tag, imageId
                 FROM images
                 WHERE albumId=".$this->CI->db->escape($this->albumId)."ORDER BY rand() LIMIT ".$toShow;
