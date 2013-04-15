@@ -48,14 +48,14 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'ap-cdbr-azure-east-a.cloudapp.net';
-$db['default']['username'] = 'b31e63ce93a795';
-$db['default']['password'] = 'c7777719';
-$db['default']['database'] = 'sanptour';
+$db['default']['hostname'] = 'localhost';
+$db['default']['username'] = 'root';
+$db['default']['password'] = 'zj7uq5eSCVF8Nbu9';
+$db['default']['database'] = 'snaptour';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
-$db['default']['db_debug'] = FALSE;  //Set this is to false to not send errors to browser and be able to catch the errors internally
+$db['default']['db_debug'] = TRUE;  //Set this is to false to not send errors to browser and be able to catch the errors internally
 $db['default']['cache_on'] = FALSE;
 $db['default']['cachedir'] = '';
 $db['default']['char_set'] = 'utf8';

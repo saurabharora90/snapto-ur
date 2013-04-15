@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 session_start(); //we need to call PHP's session object to access it through CI
 
-class uploadImages extends CI_Controller {
+class Uploadimages extends CI_Controller {
 
  function __construct()
  {
@@ -28,11 +28,11 @@ class uploadImages extends CI_Controller {
      //can only be access by a ajax request
      //if($this->input->is_ajax_request())
      //{
-         $this->load->model('images/uploadImagesModel');
+         $this->load->model('images/Uploadimages_model');
          $data = $this->getSessionData();
          $data['albumName'] = $this->input->post('albumName');
          $data['privacy'] = $this->input->post('privacy');
-         $this->uploadImagesModel->uploadImages($data);
+         $this->Uploadimages_model->uploadImages($data);
      //}
      //else
        // show_404('images/uploadimages/upload');

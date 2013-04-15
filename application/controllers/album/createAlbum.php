@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 session_start(); //we need to call PHP's session object to access it through CI
 
-class createAlbum extends CI_Controller {
+class Createalbum extends CI_Controller {
 
  function __construct()
  {
@@ -27,7 +27,7 @@ class createAlbum extends CI_Controller {
  {
      $data = $this->getSessionData();
      $data['error']= '';
-     $this->load->view('user/album/createAlbum_view', $data);
+     $this->load->view('user/album/createalbum_view', $data);
  }
 
  function storeAlbum()
@@ -35,16 +35,16 @@ class createAlbum extends CI_Controller {
      //can only be called via a ajax request
      if($this->input->is_ajax_request())
      {
-         $this->load->model('album/createAlbumModel');
+         $this->load->model('album/Createalbum_model');
          $data = $this->getSessionData();
          $data['albumName'] = $this->input->post('albumName');
          $data['privacy'] = $this->input->post('privacy');
 
-         if(!$this->createAlbumModel->createAlbumDatabase($data))
+         if(!$this->Createalbum_model->createAlbumDatabase($data))
             echo "You already have an album with this name";
      }
      else
-        show_404('album/createalbum/storealbum');
+        show_404('album/createalbum/storeAlbum');
  }
 }
 ?>

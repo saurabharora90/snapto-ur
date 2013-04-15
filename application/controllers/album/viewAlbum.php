@@ -14,7 +14,7 @@ If an album is being accessed to which access is not allowed, then just show Alb
 This helps in making sure that no one will realize if the album id he/she put in is the correct one.
 */
 
-class viewAlbum extends CI_Controller {
+class Viewalbum extends CI_Controller {
 
     var $userdata   =   "";
 
@@ -41,11 +41,11 @@ class viewAlbum extends CI_Controller {
 
  function myAlbum($albumId, $percent = 30)
  {
-    $this->load->model("album/viewAlbumModel");
-    $result = $this->viewAlbumModel->myAlbum($albumId,$this->userdata, $percent);
+    $this->load->model("album/Viewalbum_model");
+    $result = $this->Viewalbum_model->myAlbum($albumId,$this->userdata, $percent);
  
     if(empty($result)) //user does not own the album
-       show_404("album/viewAlbum/myAlbum");
+       show_404("album/viewalbum/myAlbum");
     if($result[1] == "No images in this album")
     {
         echo $result[1];
@@ -63,7 +63,7 @@ class viewAlbum extends CI_Controller {
         $data["name"] = $this->userdata["name"];
         $data["albumId"] = $albumId;
         //$data["percent"] = $percent;
-        $this->load->view("user/album/viewAlbum_view",$data);
+        $this->load->view("user/album/viewalbum_view",$data);
     }
  }
 
@@ -81,11 +81,11 @@ class viewAlbum extends CI_Controller {
  {
      if($this->input->is_ajax_request())
      {
-        $this->load->model("album/viewAlbumModel");
-        $result = $this->viewAlbumModel->myAlbum($albumId,$this->userdata, $percent);
+        $this->load->model("album/Viewalbum_model");
+        $result = $this->Viewalbum_model->myAlbum($albumId,$this->userdata, $percent);
  
         if(empty($result)) //user does not own the album
-           show_404("album/viewAlbum/myAlbum");
+           show_404("album/viewalbum/myAlbum");
 
         else
         {

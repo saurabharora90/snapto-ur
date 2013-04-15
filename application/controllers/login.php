@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class login extends CI_Controller {
+class Login extends CI_Controller {
 
 	 function __construct()
      {
@@ -17,7 +17,7 @@ class login extends CI_Controller {
 
     public function verify()
     {
-        $this->load->model('loginModel','',TRUE);
+        $this->load->model('Login_model','',TRUE);
         $this->load->library('form_validation');
 
         $this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
@@ -41,7 +41,7 @@ class login extends CI_Controller {
         $username = $this->input->post('username');
 
         //query the database
-        $result = $this->loginModel ->login_verify($username, $password);
+        $result = $this->Login_model->login_verify($username, $password);
 
         if($result)
         {

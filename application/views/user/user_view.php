@@ -24,13 +24,13 @@
                 {
                     $albumName[$i] = $created_album_info[$i]["albumName"];
                     $albumId[$i] = $created_album_info[$i]["albumId"];
-                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId[$i].">".$albumName[$i]."</li>";
+                    echo "<li> <a href="."../album/viewalbum/myAlbum/".$albumId[$i].">".$albumName[$i]."</li>";
                 }
                 echo "</ul>";
             ?>
         </p>
         <a href="../user/logout">Logout</a> </br>
-        <a href="../album/createAlbum">Create Album</a>
+        <a href="../album/createalbum">Create Album</a>
         <p></p>
     </body>
 </html>
