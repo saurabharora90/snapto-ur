@@ -1,4 +1,8 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+ require_once("/application/libraries/WindowsAzure/WindowsAzure.php");
+ use WindowsAzure\Common\ServicesBuilder;
+ use WindowsAzure\Common\ServiceException;
+ use WindowsAzure\Table\Models\QueryEntitiesOptions;
 
  /*
  This library contains the main algorithm information!
@@ -47,6 +51,44 @@ class My_filterImages{
             return "No images in this album";
 
         return $query->result_array();
+    }
+
+    function getfilteredSet()
+    {
+        if(ENVIRONMENT == 'development')
+            $tableRestProxy = ServicesBuilder::getInstance()->createTableService('UseDevelopmentStorage=true');
+        if(ENVIRONMENT == 'production')
+            $tableRestProxy = ServicesBuilder::getInstance()->createTableService(tableConnectionString);
+
+        $filter = "PartitionKey eq '".$this->albumId."'";
+        //$options = new QueryEntitiesOptions();
+        //$options->addSelectField("DateTimeOriginal");
+        //$options->setNextPartitionKey($this->albumId);
+        //var_dump($options);
+        $datetimearr = array();
+        try 
+        {
+            $result = $tableRestProxy->queryEntities("metadata", $filter);
+            $entities = $result->getEntities();
+
+            foreach($entities as $entity)
+            {
+                $photoTaken = $entity->getPropertyValue("DateTimeOriginal");
+                $imageId = $entity->getRowKey();
+                $datetimearr[$imageId] = $photoTaken;
+            }
+            array_multisort($datetimearr, SORT_ASC);
+            var_dump ($datetimearr);
+        }
+        catch(ServiceException $e)
+        {
+            // Handle exception based on error codes and messages.
+            // Error codes and messages are here: 
+            // http://msdn.microsoft.com/en-us/library/windowsazure/dd179438.aspx
+            $code = $e->getCode();
+            $error_message = $e->getMessage();
+            echo $code.": ".$error_message."<br />";
+        }
     }
 
 }

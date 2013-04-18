@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id lang="en">
+<html lang="en">
     <head>
         <title>Create Album &middot; <?php echo $name?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">

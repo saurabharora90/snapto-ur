@@ -320,7 +320,7 @@
     <div id="myCarousel" class="carousel slide">
       <div class="carousel-inner">
         <div class="item active">
-          <img src="../assets/img/Pic2.JPG" alt="slide1">
+          <img src="../assets/img/pic2.jpg" alt="slide1">
           <div class="container">
             <div class="carousel-caption">
               <h1>View photos</h1>
@@ -330,7 +330,7 @@
           </div>
         </div>
         <div class="item">
-          <img src="../assets/img/Pic1.JPG" alt="slide2">
+          <img src="../assets/img/pic1.jpg" alt="slide2">
           <div class="container">
             <div class="carousel-caption">
               <h1>Share</h1>
@@ -340,7 +340,7 @@
           </div>
         </div>
         <div class="item">
-          <img src="../assets/img/Pic3.JPG" alt="slide3">
+          <img src="../assets/img/pic3.jpg" alt="slide3">
           <div class="container">
             <div class="carousel-caption">
               <h1>Full control</h1>

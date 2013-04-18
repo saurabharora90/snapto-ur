@@ -43,7 +43,7 @@
                     $('#errorHeading').hide();
                     $('#file_up').uploadify({
                         'swf': base_url + 'assets/uploadify/uploadify.swf',
-                        'uploader': base_url + 'images/uploadimages/upload',
+                        'uploader': base_url + 'images/uploadImages/upload',
                         // Put your options here
                         'progressData': 'percentage',
                         'auto': false,
@@ -79,7 +79,7 @@
                     else {
                         //Post the album name to database
                         albumError.html("");
-                        $.post('createalbum/storeAlbum', { albumName: $('#albumName').val(), privacy: $('#privacy').val() }, function (data) {
+                        $.post('createAlbum/storeAlbum', { albumName: $('#albumName').val(), privacy: $('#privacy').val() }, function (data) {
                             if (data == "") {
                                 $('#file_up').uploadify('upload', '*');
                             }
