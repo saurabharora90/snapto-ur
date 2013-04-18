@@ -4,8 +4,6 @@
  use WindowsAzure\Common\ServicesBuilder;
  use WindowsAzure\Common\ServiceException;
  use WindowsAzure\Blob\Models\BlockList;
- use WindowsAzure\Table\Models\Entity;
- use WindowsAzure\Table\Models\EdmType;
 
 Class uploadImagesModel extends CI_Model
 {
@@ -209,7 +207,7 @@ Class uploadImagesModel extends CI_Model
         imagecopyresampled($thumb, $sourceImage, 0, 0, 0, 0, $tWidth, $tHeight, $width, $height);
         imagedestroy($sourceImage);
         $thumbImage="thumb.jpg";
-        imagejpeg($thumb,$thumbImage); //this might not work on the server
+        imagejpeg($thumb,$thumbImage);
         $content = file_get_contents($thumbImage);
         $blobRestProxy->createBlockBlob(Thumbnail, $blobName, $content);
     }
@@ -223,51 +221,36 @@ Class uploadImagesModel extends CI_Model
         $datetime = $this->my_metadata->getDateTimeOriginal();
         $imageSettings = $this->my_metadata->getImageSettings(); //some items might be unavaliable! Decide whether or not to store them.
 
-        //var_dump($imageSettings);
+        $data = array(
+                        'imageId' => $imageId,
+                        'albumId' => $album_id
+                   );
 
-        //Save image metadata to table storage
-        if(ENVIRONMENT == 'development')
-            $tableRestProxy = ServicesBuilder::getInstance()->createTableService('UseDevelopmentStorage=true');
-        if(ENVIRONMENT == 'production')
-            $tableRestProxy = ServicesBuilder::getInstance()->createTableService(tableConnectionString);
-        
-        $entity = new Entity();
-        $entity->setPartitionKey($album_id);
-        $entity->setRowKey($imageId);
         if($gps!=FALSE)
         {
             foreach($gps as $key=>$value)
-            {
-                $entity->addProperty($key,EdmType::DOUBLE,$value);
-            }
+                $data[$key] = $value;
         }
+
         if($datetime!=FALSE)
-        {
-            $entity->addProperty('DateTimeOriginal',EdmType::DATETIME, DateTime::createFromFormat("Y:m:d H:i:s",$datetime)); //This is the format specified in the EXIF document
-        }
+            $data['DateTimeTaken'] = $datetime;
 
         //The time will be stored in the metadata table as per GMT time equivalent.
         
         foreach($imageSettings as $key=>$value)
         {
-            if($key=='ISOSpeedRatings' && $value!="Unavailable")
-                $entity->addProperty($key,EdmType::INT32,$value);  //ISOSpeedRatings is of type integer.
-            elseif($value!="Unavailable")
-                $entity->addProperty($key,EdmType::STRING,$value);
+                if($value!="Unavailable")
+                    $data[$key] = $value;
         }
 
-        try
+        $this->db->insert('metadata', $data); 
+        
+        if($this->db->affected_rows() == 0) //No Image exists
+            return TRUE;
+        else
         {
-            $tableRestProxy->insertEntity(Metadata_table, $entity);
-        }
-        catch(ServiceException $e)
-        {
-            // Handle exception based on error codes and messages.
-            // Error codes and messages are here: 
-            // http://msdn.microsoft.com/en-us/library/windowsazure/dd179438.aspx
-            $code = $e->getCode();
-            $error_message = $e->getMessage();
-            echo $code." ".$error_message;
+            //roll back image from database and delete uploaded image from blob and thumbnail. Inform user of failure.
+            return FALSE; //Image exists.
         }
     }
 

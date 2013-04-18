@@ -69,4 +69,25 @@ FOREIGN KEY(albumId) References albums(albumId) ON DELETE CASCADE,
 FOREIGN KEY(privacy) References privacy(type)
 );
 
+CREATE TABLE metadata
+(
+imageId varchar(32) PRIMARY KEY,
+albumId varchar(32) NOT NULL,
+GPS_Latitude float,
+GPS_Longitude float,
+DateTimeTaken datetime,
+ExposureTime float,
+FNumber float,
+ISOSpeedRatings int,
+CompressedBitsPerPixel float,
+ShutterSpeedValue float,
+ApertureValue float,
+FocalLength float,
+INDEX(imageId),
+INDEX(albumId),
+INDEX(DateTimeTaken), /*for quick retrieval*/
+FOREIGN KEY(albumId) References albums(albumId) ON DELETE CASCADE,
+FOREIGN KEY(imageId) References images(imageId) ON DELETE CASCADE
+);
+
 /*Index have been added as they are required for foreign key constraints in a MYSQL database.*/

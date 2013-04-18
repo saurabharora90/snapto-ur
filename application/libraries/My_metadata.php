@@ -53,8 +53,8 @@ class My_metadata{
         }
 
         //calculate the decimal degree
-        $result['latitude'] = $LatM * ($gps['LatDegree'] + ($gps['LatMinute'] / 60) + ($gps['LatgSeconds'] / 3600));
-        $result['longitude'] = $LongM * ($gps['LongDegree'] + ($gps['LongMinute'] / 60) + ($gps['LongSeconds'] / 3600));
+        $result['GPS_Latitude'] = $LatM * ($gps['LatDegree'] + ($gps['LatMinute'] / 60) + ($gps['LatgSeconds'] / 3600));
+        $result['GPS_Longitude'] = $LongM * ($gps['LongDegree'] + ($gps['LongMinute'] / 60) + ($gps['LongSeconds'] / 3600));
 
         //return json_encode($result);
         return $result;
@@ -114,15 +114,15 @@ class My_metadata{
             $imageSpecific['FocalLength'] = $notFound;
 
         //convert strings to numbers
-        /*foreach($imageSpecific as $key => $value)
+        foreach($imageSpecific as $key => $value)
         {
             $pos = strpos($value, '/');
-            if($pos !== false)
+            if($pos !== false  && $value!=$notFound)
             {
                 $temp = explode('/',$value);
                 $imageSpecific[$key] = $temp[0] / $temp[1];
             }
-        }*/
+        }
 
         return $imageSpecific;
     }
