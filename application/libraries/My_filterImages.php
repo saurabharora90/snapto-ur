@@ -139,10 +139,10 @@ class My_filterImages{
                 $start = $key." ".$start;
                 $end = $key." ".$end;
 
-                $sql = "SELECT imageId, DateTimeTaken
-                        FROM metadata
-                        WHERE albumId = {$this->CI->db->escape($this->albumId)} AND DateTimeTaken >= '{$start}' AND DateTimeTaken < '{$end}' 
-                        Order By DateTimeTaken";
+                $sql = "SELECT m.imageId, m.DateTimeTaken, i.imageName
+                        FROM metadata m, images i
+                        WHERE m.imageId = i.imageId AND m.albumId = {$this->CI->db->escape($this->albumId)} AND m.DateTimeTaken >= '{$start}' AND m.DateTimeTaken < '{$end}' 
+                        Order By m.DateTimeTaken";
                 //echo $sql ."</br></br>";
 
                 //store as arr["date"]["timeStart-timeEnd"] = imageId's

@@ -47,7 +47,7 @@
  <span class="icon-bar"></span>
 
                     </a>
-                    <a class="brand" href="home">Snapto-ur</a>
+                    <a class="brand" href="/home">Snapto-ur</a>
                     <div class="nav-collapse in collapse" style="height: auto;">
                         <p class="navbar-text pull-right">Logged in as
                             <a href="user" class="navbar-link"><?php echo $name; ?></a>
@@ -92,9 +92,9 @@
                                                 echo "<ul>";
                                                 for($i = 0; $i<$createdAlbumsNo; $i++)
                                                 {
-                                                    $albumName[$i] = $created_album_info[$i]["albumName"];
-                                                    $albumId[$i] = $created_album_info[$i]["albumId"];
-                                                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId[$i].">".$albumName[$i]."</li>";
+                                                    $albumName = $created_album_info[$i]["albumName"];
+                                                    $albumId = $created_album_info[$i]["albumId"];
+                                                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId.">".$albumName."</li>";
                                                 }
                                                 if($more==TRUE)
                                                     echo "<li> <a href="."".">More</li>";
@@ -188,7 +188,7 @@
                         'progressData': 'percentage',
                         'auto': false,
                         'successTimeout': 6000,
-                        'debug': 'true',
+                        //'debug': 'true',
                         'multi': true,
                         'fileTypeExts': '*.jpg; *.jpeg',
                         'fileTypeDesc': 'Supported Images',

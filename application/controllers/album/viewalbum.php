@@ -62,6 +62,8 @@ class viewAlbum extends CI_Controller {
         $data["thumbUrl"] = Thumbnail_Image_blobURL;
         $data["name"] = $this->userdata["name"];
         $data["albumId"] = $albumId;
+        $this->load->model('userModel');
+        $data['created_album_info'] = $this->userModel->getCreatedAlbums($this->userdata['username']);
         //$data["percent"] = $percent;
         $this->load->view("user/album/viewAlbum_view",$data);
     }

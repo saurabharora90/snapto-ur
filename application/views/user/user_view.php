@@ -91,9 +91,9 @@
                                                 echo "<ul>";
                                                 for($i = 0; $i<$createdAlbumsNo; $i++)
                                                 {
-                                                    $albumName[$i] = $created_album_info[$i]["albumName"];
-                                                    $albumId[$i] = $created_album_info[$i]["albumId"];
-                                                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId[$i].">".$albumName[$i]."</li>";
+                                                    $albumName = $created_album_info[$i]["albumName"];
+                                                    $albumId = $created_album_info[$i]["albumId"];
+                                                    echo "<li> <a href="."../album/viewAlbum/myAlbum/".$albumId.">".$albumName."</li>";
                                                 }
                                                 if($more==TRUE)
                                                     echo "<li> <a href="."".">More</li>";
@@ -135,9 +135,9 @@
                             <ol class="carousel-indicators">
                                 <li data-target="#myCarousel" data-slide-to="0" class=""></li>
                                 <li data-target="#myCarousel" data-slide-to="1" class=""></li>
-                                <li data-target="#myCarousel" data-slide-to="2" class=""></li>
+                                <li data-target="#myCarousel" data-slide-to="2" class="active"></li>
                                 <li data-target="#myCarousel" data-slide-to="3" class=""></li>
-                                <li data-target="#myCarousel" data-slide-to="4" class="active"></li>
+                                <li data-target="#myCarousel" data-slide-to="4" class=""></li>
                             </ol>
                             <!-- Carousel items -->
                             <div class="carousel-inner">
@@ -153,7 +153,7 @@
                                          <h4></h4>
                                     </div>
                                 </div>
-                                <div class="item">
+                                <div class="item active">
                                     <img src=<?php echo $imageURL.$random_images[2]['imageId'].".JPG";?> >
                                     <div class="carousel-caption">
                                          <h4></h4>
@@ -165,7 +165,7 @@
                                          <h4></h4>
                                     </div>
                                 </div>
-                                <div class="item active">
+                                <div class="item">
                                     <img src=<?php echo $imageURL.$random_images[4]['imageId'].".JPG";?> >
                                     <div class="carousel-caption">
                                          <h4></h4>

@@ -23,9 +23,9 @@ Class viewAlbumModel extends CI_Model
             $params = array(0=>$albumId,1=>$percent);
             $this->load->library("My_filterImages",$params);
 
-            //$imagesToDisplay = $this->my_filterimages->getRandomSet();
+            $imagesToDisplay = $this->my_filterimages->getRandomSet();
             
-            $imagesToDisplay = $this->my_filterimages->getfilteredSet();
+            //$imagesToDisplay = $this->my_filterimages->getfilteredSet();
 
             $count = "SELECT COUNT(*) AS cnt FROM images WHERE albumId=".$this->db->escape($albumId);
             $query = $this->db->query($count);
