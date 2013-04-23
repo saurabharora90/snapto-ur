@@ -11,6 +11,16 @@ Class userModel extends CI_Model
         return $query->result_array();
     }
 
+    function getRandomImages($username)
+    {
+        $sql = "SELECT imageId
+                FROM Images
+                WHERE owner_userId = '$username' ORDER BY rand() LIMIT 5";
+
+        $query = $this->db->query($sql);
+        return $query->result_array();
+    }
+
     //Use the views for these two functions
     /*function getSharedAlbums($username)
     {

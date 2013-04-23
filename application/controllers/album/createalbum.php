@@ -27,6 +27,8 @@ class createAlbum extends CI_Controller {
  {
      $data = $this->getSessionData();
      $data['error']= '';
+     $this->load->model('userModel');
+     $data['created_album_info'] = $this->userModel->getCreatedAlbums($data['username']);
      $this->load->view('user/album/createAlbum_view', $data);
  }
 
