@@ -51,11 +51,110 @@ class My_filterImages{
 
     function getfilteredSet()
     {
-        $datetimearr = array();
-        array_multisort($datetimearr, SORT_ASC);
-        var_dump ($datetimearr);
+        $imagesByDay = $this->ImagesIndexedByDate_ArrangedByTime();
+        $imagesByDay_TimeInterval = $this->ImagesIndexedByDate_SubIndexedbyTimeIntervals($imagesByDay);
+        $imagesByDay = NULL;
 
+        //var_dump($imagesByDay_TimeInterval);
+    }
+
+    /*
+    Returns an array which contains all the images in the album organised ans sorted by data
+    return @array such that array[date1]=>all Images taken on this date, array[date2]=>all Images taken on this date and soo on. Only the time component of the images are returned as the array index key represents the date
+    */
+    private function ImagesIndexedByDate_ArrangedByTime()
+    {
+        $sql = "SELECT imageId, date(DateTimeTaken) as date FROM metadata WHERE albumId = {$this->CI->db->escape($this->albumId)} Order By DateTimeTaken";
+        $query = $this->CI->db->query($sql);
+        
+        $albumStartDate = $query->first_row('array'); //to force output as an array.
+        $albumStartDate = DateTime::createFromFormat('Y-m-d', $albumStartDate['date']);
+
+        $albumEndDate = $query->last_row('array');
+        $albumEndDate = DateTime::createFromFormat('Y-m-d', $albumEndDate['date']);
+
+        //find the number of days over which the album is spread.
+        $interval = $albumEndDate->diff($albumStartDate);
+        //var_dump($interval);
+
+        //reclaim memory
+        $query = NULL;
+        
         //retrive total number of days over which album is spread.
+        $imagesByDay = array();
+        $startDate = $albumStartDate;
+
+        for($i=0; $i<=$interval->d;$i++)
+        {
+            $start = $startDate->format('Y-m-d');
+            $endDate = $startDate->add(new DateInterval('P1D'));
+            $end = $endDate->format('Y-m-d');
+
+            $sql = "SELECT imageId, time(DateTimeTaken) as time
+                    FROM metadata
+                    WHERE albumId = {$this->CI->db->escape($this->albumId)} AND DateTimeTaken >= '{$start}' AND DateTimeTaken < '{$end}' 
+                    Order By DateTimeTaken";
+            $query = $this->CI->db->query($sql);
+            $imagesByDay[$start] = $query->result_array();
+            $startDate = $endDate;
+        }
+
+        return $imagesByDay;
+    }
+
+    private function ImagesIndexedByDate_SubIndexedbyTimeIntervals($imagesByDay)
+    {
+        $timePeriod = array(); //the period over which the photos are taken, i.e. 4 hours or 3 hours or 10 hours!
+        $imagesByDay_TimeInterval = array();
+
+        foreach($imagesByDay as $key=>$value)
+        {
+            $startTime = $imagesByDay[$key][0]['time'];
+            $startTime = DateTime::createFromFormat('H:i:s', $startTime);
+            
+            $endTime = $imagesByDay[$key][sizeof($imagesByDay[$key])-1]['time'];
+            $endTime = DateTime::createFromFormat('H:i:s', $endTime);
+            
+            $interval = $endTime->diff($startTime);
+            $timePeriod[$key] = $interval->h;
+
+            if($interval->i != 0)  //if the period is like 1 hour and some minutes then make the period be 2 hours.
+                $timePeriod[$key]++;
+
+            if($timePeriod[$key] <= 6)
+                $timeIntervals = 1;  //group photos which are one hour apart
+            elseif($timePeriod[$key] > 6 && $timePeriod[$key] <= 12)
+                $timeIntervals = 2; //group photos which are 2 hour apart
+            elseif($timePeriod[$key] > 12 && $timePeriod[$key] <=18 )
+                $timeIntervals = 3; //group photos which are 3 hour apart
+            else
+                $timeIntervals = 4; //group photos which are 4 hour apart
+
+            for($i=0; $i<ceil($timePeriod[$key]/$timeIntervals);$i++)  //$timePeriod[$key]/$timeIntervals represents the number of intervals that we will have
+            {
+                $start = $startTime->format('H:i:s');
+                $endTime = $startTime->add(new DateInterval("PT".$timeIntervals."H"));
+                $end = $endTime->format('H:i:s');
+
+                $start = $key." ".$start;
+                $end = $key." ".$end;
+
+                $sql = "SELECT imageId, DateTimeTaken
+                        FROM metadata
+                        WHERE albumId = {$this->CI->db->escape($this->albumId)} AND DateTimeTaken >= '{$start}' AND DateTimeTaken < '{$end}' 
+                        Order By DateTimeTaken";
+                //echo $sql ."</br></br>";
+
+                //store as arr["date"]["timeStart-timeEnd"] = imageId's
+                $query = $this->CI->db->query($sql);
+                $imagesByDay_TimeInterval[$key][$start."-".$end] = $query->result_array();
+
+                $startTime = $endTime;
+            }
+        }
+        
+        //var_dump($imagesByDay_TimeInterval);
+        return $imagesByDay_TimeInterval;
     }
 
 }
