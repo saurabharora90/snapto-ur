@@ -58,6 +58,7 @@ class My_filterImages{
         $imagesByDay = NULL;
         $selected = array();
         $count = 0;
+        $already = array();
         foreach($imagesByDay_TimeInterval as $date=>$timeSlot)
         {
             foreach($timeSlot as $slot=>$photos)
@@ -69,12 +70,18 @@ class My_filterImages{
 
                 for($i=0;$i<$toSelectFromthisDay;$i++)
                 {
-                    srand();
+                    do{
                     $choose = mt_rand(0,$totalInTHisDay-1);
+                    }while($already!=NULL and in_array($choose,$already));
+                    
+                    $already[$i] = $choose;
+                    //var_dump($already); return;
+                    
                     //echo $choose.", ";
                     $selected[$count] = array("imageId" => $photos[$choose]["imageId"], "imageName" => $photos[$choose]["imageName"]);
                     $count++;
                 }
+                $already = NULL;
                 //echo "</br> </br>";
             }
         }
