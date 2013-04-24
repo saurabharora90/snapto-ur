@@ -182,34 +182,25 @@
             <!-- Example row of columns -->
             <div class="row">
                 <div class="span4">
-                     <h2>Heading</h2>
+                     <h2>Dynamic Summary</h2>
 
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
-                        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
-                        sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed
-                        odio dui.</p>
+                    <p>Our intelligent algorithm generates a dyanmic summary of your album for easy viewing. The algorithms learns over time to genearate subsets which include your popular and best images.</p>
                     <p>
                         <a class="btn" href="#">View details »</a>
                     </p>
                 </div>
                 <div class="span4">
-                     <h2>Heading</h2>
+                     <h2>Customizable subset</h2>
 
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
-                        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo
-                        sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed
-                        odio dui.</p>
+                    <p>You have the liberty to define the number of photos you want to view and we will generate the perfect subset for you.</p>
                     <p>
                         <a class="btn" href="#">View details »</a>
                     </p>
                 </div>
                 <div class="span4">
-                     <h2>Heading</h2>
+                     <h2>Dive into details</h2>
 
-                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas
-                        eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus,
-                        tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum
-                        massa justo sit amet risus.</p>
+                    <p>View photos that interest you. Photos are organised by time which allows you to kepp track of events.</p>
                     <p>
                         <a class="btn" href="#">View details »</a>
                     </p>

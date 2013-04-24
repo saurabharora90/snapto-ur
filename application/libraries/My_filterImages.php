@@ -46,6 +46,8 @@ class My_filterImages{
         if($query->num_rows() == 0) //User does not own that album
             return "No images in this album";
 
+        //var_dump($query->result_array());
+
         return $query->result_array();
     }
 
@@ -54,8 +56,29 @@ class My_filterImages{
         $imagesByDay = $this->ImagesIndexedByDate_ArrangedByTime();
         $imagesByDay_TimeInterval = $this->ImagesIndexedByDate_SubIndexedbyTimeIntervals($imagesByDay);
         $imagesByDay = NULL;
+        $selected = array();
+        $count = 0;
+        foreach($imagesByDay_TimeInterval as $date=>$timeSlot)
+        {
+            foreach($timeSlot as $slot=>$photos)
+            {
+                
+                $totalInTHisDay = sizeof($photos);
+                $toSelectFromthisDay = (($this->percent) * ($totalInTHisDay))/100;
+                $toSelectFromthisDay = ceil($toSelectFromthisDay);
 
-        //var_dump($imagesByDay_TimeInterval);
+                for($i=0;$i<$toSelectFromthisDay;$i++)
+                {
+                    srand();
+                    $choose = mt_rand(0,$totalInTHisDay-1);
+                    //echo $choose.", ";
+                    $selected[$count] = array("imageId" => $photos[$choose]["imageId"], "imageName" => $photos[$choose]["imageName"]);
+                    $count++;
+                }
+                //echo "</br> </br>";
+            }
+        }
+        return $selected;
     }
 
     /*
@@ -111,11 +134,11 @@ class My_filterImages{
         {
             $startTime = $imagesByDay[$key][0]['time'];
             $startTime = DateTime::createFromFormat('H:i:s', $startTime);
+
+            $last = $imagesByDay[$key][sizeof($imagesByDay[$key])-1]['time'];
+            $last = DateTime::createFromFormat('H:i:s', $last);
             
-            $endTime = $imagesByDay[$key][sizeof($imagesByDay[$key])-1]['time'];
-            $endTime = DateTime::createFromFormat('H:i:s', $endTime);
-            
-            $interval = $endTime->diff($startTime);
+            $interval = $last->diff($startTime);
             $timePeriod[$key] = $interval->h;
 
             if($interval->i != 0)  //if the period is like 1 hour and some minutes then make the period be 2 hours.
@@ -130,6 +153,9 @@ class My_filterImages{
             else
                 $timeIntervals = 4; //group photos which are 4 hour apart
 
+            $last = $last->format('H:i:s');
+            $last = $key." ".$last;
+
             for($i=0; $i<ceil($timePeriod[$key]/$timeIntervals);$i++)  //$timePeriod[$key]/$timeIntervals represents the number of intervals that we will have
             {
                 $start = $startTime->format('H:i:s');
@@ -138,6 +164,9 @@ class My_filterImages{
 
                 $start = $key." ".$start;
                 $end = $key." ".$end;
+
+                if($i == ceil($timePeriod[$key]/$timeIntervals) -1 )
+                    $end = $key." "."23:59:59";
 
                 $sql = "SELECT m.imageId, m.DateTimeTaken, i.imageName
                         FROM metadata m, images i

@@ -93,9 +93,9 @@
                                                 echo "<ul>";
                                                 for($i = 0; $i<$createdAlbumsNo; $i++)
                                                 {
-                                                    $albumName = $created_album_info[$i]["albumName"];
-                                                    $albumId = $created_album_info[$i]["albumId"];
-                                                    echo "<li> <a href=".base_url()."album/viewAlbum/myAlbum/".$albumId.">".$albumName."</li>";
+                                                    $Name = $created_album_info[$i]["albumName"];
+                                                    $Id = $created_album_info[$i]["albumId"];
+                                                    echo "<li> <a href=".base_url()."album/viewAlbum/myAlbum/".$Id.">".$Name."</li>";
                                                 }
                                                 if($more==TRUE)
                                                     echo "<li> <a href="."".">More</li>";
